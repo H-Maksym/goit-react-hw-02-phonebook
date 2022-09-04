@@ -1,0 +1,14 @@
+.item {
+  display: flex;
+  flex-direction: row;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.03rem;
+}
+
+.value {
+  font-size: 18px;
+  margin-left: auto;
+  font-weight: 500;
+}
