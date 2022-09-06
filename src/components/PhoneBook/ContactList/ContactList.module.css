@@ -5,6 +5,9 @@
   font-weight: 500;
   line-height: 1.35;
   letter-spacing: 0.03rem;
+  justify-content: space-between;
+  margin-top: 5px;
+  list-style-type: circle;
 }
 
 .value {
