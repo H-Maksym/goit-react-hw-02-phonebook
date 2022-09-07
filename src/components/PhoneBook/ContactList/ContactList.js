@@ -7,18 +7,20 @@ export default class ContactList extends Component {
   render() {
     const { contacts, onDelContact } = this.props;
     return (
-      <ol>
-        {contacts.map(({ id, name, number }) => (
-          <li key={id} className={s.item}>
-            <ContactItem
-              id={id}
-              name={name}
-              number={number}
-              onDelContact={onDelContact}
-            />
-          </li>
-        ))}
-      </ol>
+      <ul>
+        {contacts.map(({ id, name, number }) => {
+          return (
+            <li key={id} className={s.item}>
+              <ContactItem
+                id={id}
+                name={name}
+                number={number}
+                onDelContact={onDelContact}
+              />
+            </li>
+          );
+        })}
+      </ul>
     );
   }
 }

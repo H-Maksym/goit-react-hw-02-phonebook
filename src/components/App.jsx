@@ -1,12 +1,14 @@
-// import Counter from 'components/Counter/Counter';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
 import React, { Component } from 'react';
 import Section from 'components/PhoneBook/Section';
 
 import ContactForm from 'components/PhoneBook/ContactForm';
-import Input from 'components/PhoneBook/Input';
+import Filter from 'components/PhoneBook/Filter';
 
 import ContactList from 'components/PhoneBook/ContactList';
-// import Notification from 'components/PhoneBook/Notification';
+import Notification from 'components/PhoneBook/Notification';
+import { nanoid } from 'nanoid';
 
 export default class App extends Component {
   state = {
@@ -16,18 +18,50 @@ export default class App extends Component {
       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
-    name: '',
-    number: '',
     filter: '',
   };
 
-  handleInputChange = e => {
-    const { name, value } = e.currentTarget;
+  /** checks if a contact exists in contacts list*/
+  existContact = name => {
+    const { contacts } = this.state;
+    return contacts.find(
+      data => data.name.toLowerCase() === name.toLowerCase()
+    );
+  };
+
+  /** submit event handler*/
+  formSubmitHandler = data => {
+    const contact = {
+      id: nanoid(),
+      ...data,
+    };
+
+    if (this.existContact(contact.name)) {
+      return Notify.info('Such a contact already exists');
+    }
+
+    this.setState(({ contacts }) => ({
+      contacts: [contact, ...contacts],
+    }));
+  };
+
+  /** event handler filter*/
+  changeFilter = e => {
     this.setState({
-      [name]: value,
+      filter: e.currentTarget.value.trim(),
     });
   };
 
+  /** calculated value for filter*/
+  getVisibleContacts = () => {
+    const { contacts, filter } = this.state;
+    const normalizeFilter = filter.toLowerCase();
+    return contacts.filter(data => {
+      return data.name.toLowerCase().includes(normalizeFilter);
+    });
+  };
+
+  /** delete contact from list*/
   onDelContact = e => {
     const key = e.target.id;
     this.setState(prevState => ({
@@ -35,23 +69,18 @@ export default class App extends Component {
     }));
   };
 
-  //   onAddContact = (e) => {
-  //   const key = e.target.id;
-  //   this.setState(prevState => ({
-  //     contacts: prevState.contacts.filter(({id})=>id!==key)
-  //   }));
-  // };
-
+  /** render*/
   render() {
-    const { contacts, name, number, filter } = this.state;
+    const { contacts, filter } = this.state;
+    // const visibleContacts = this.getVisibleContacts();
     return (
       <div
         style={{
           width: '450px',
           height: 'auto',
-          // padding: '20px',
+          padding: '20px',
           // minHeight: '100vh',
-          display: 'flex',
+          // display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           // alignItems: 'center',
@@ -61,42 +90,26 @@ export default class App extends Component {
       >
         <h1>React homework</h1>
         <Section title="Phonebook">
-          <ContactForm title="">
-            <Input
-              type="text"
-              titleInput="name"
-              name="name"
-              value={name}
-              handleInputChange={this.handleInputChange}
-              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-            />
-            <Input
-              type="tel"
-              titleInput="number"
-              name="number"
-              value={number}
-              handleInputChange={this.handleInputChange}
-              pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-              title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-            />
-          </ContactForm>
+          <ContactForm title="" onSubmit={this.formSubmitHandler} />
         </Section>
 
         <Section title="Contacts">
-          {/* {this.countTotalFeedback() ? () : (
-            <Notification message="No feedback given" />
-          ) */}
-          <Input
-            type="text"
-            titleInput="search"
-            name="filter"
-            value={filter}
-            handleInputChange={this.handleInputChange}
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          />
-          <ContactList contacts={contacts} onDelContact={this.onDelContact} />
+          {contacts.length ? (
+            <>
+              <Filter
+                title="search"
+                name="filter"
+                value={filter}
+                changeFilter={this.changeFilter}
+              />
+              <ContactList
+                contacts={this.getVisibleContacts()}
+                onDelContact={this.onDelContact}
+              />
+            </>
+          ) : (
+            <Notification message="There are no contacts" />
+          )}
         </Section>
       </div>
     );

@@ -1,4 +1,4 @@
-// import s from './Input.module.css';
+import s from './Input.module.css';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -7,9 +7,10 @@ export default class Input extends Component {
     const { type, titleInput, name, value, pattern, title, handleInputChange } =
       this.props;
     return (
-      <label>
+      <label className={s.label}>
         {titleInput}
         <input
+          className={s.input}
           type={type}
           name={name}
           value={value}
@@ -30,5 +31,4 @@ Input.propTypes = {
   value: PropTypes.string,
   pattern: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  handleInputChange: PropTypes.func,
 };
